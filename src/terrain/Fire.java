@@ -2,15 +2,15 @@ package terrain;
 
 import exceptions.LocationOutOfBoundsException;
 
-import java.net.URL;
 import java.io.IOException;
+import java.net.URL;
 
 public class Fire
-        extends TerrainAbstract {
+        extends Terrain {
 
     public Fire(int x, int y)
             throws IOException, LocationOutOfBoundsException {
-        super(x, y, MovementType.SLOW, TerrainType.FIRE, new URL("file:fire.png"));
+        super(x, y, MovementType.SLOW, TerrainType.FIRE, 3, new URL("file:fire.png"));
     }
 
     @Override

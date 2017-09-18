@@ -2,15 +2,15 @@ package terrain;
 
 import exceptions.LocationOutOfBoundsException;
 
-import java.net.URL;
 import java.io.IOException;
+import java.net.URL;
 
 public class Stone
-        extends TerrainAbstract {
+        extends Terrain {
 
     public Stone(int x, int y)
             throws IOException, LocationOutOfBoundsException {
-        super(x, y, MovementType.BLOCKED, TerrainType.STONE, new URL("file:stone.png"));
+        super(x, y, MovementType.BLOCKED, TerrainType.STONE, 1, new URL("file:stone.png"));
     }
 
     @Override

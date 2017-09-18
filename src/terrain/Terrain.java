@@ -3,21 +3,22 @@ package terrain;
 import exceptions.LocationOutOfBoundsException;
 import window.WindowProperties;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.net.URL;
-import java.io.IOException;
-import java.util.HashMap;
 import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.PriorityQueue;
 
 /**
- * <h1>terrain.TerrainAbstract Class</h1> The terrain.TerrainAbstract class defines behavior for all terrain.
+ * <h1>terrain.Terrain Class</h1> The terrain.Terrain class defines behavior for all terrain.
  *
  * @author Dominic Martinez
  * @since 2017-9-15
  */
 
-public abstract class TerrainAbstract {
+public abstract class Terrain implements Comparable<Terrain> {
 
     // The x-y location of the bottom left corner of the object on the game grid
     private int x;
@@ -41,7 +42,7 @@ public abstract class TerrainAbstract {
         SLOW
     }
 
-    private final MovementType movementType;
+    private final MovementType MOVEMENT_TYPE;
 
     // Types of terrain
     public enum TerrainType {
@@ -73,7 +74,13 @@ public abstract class TerrainAbstract {
         }
     }
 
-    private final TerrainType terrainType;
+    public final TerrainType TERRAIN_TYPE;
+
+    public final int Z_AXIS;
+
+    private static PriorityQueue<Terrain> drawQueue = new PriorityQueue<>();
+
+    private static Graphics2D g2;
 
     /**
      * Abstract constructor for terrain
@@ -85,7 +92,7 @@ public abstract class TerrainAbstract {
      * @throws IOException
      * @throws LocationOutOfBoundsException
      */
-    public TerrainAbstract(int x, int y, MovementType movementType, TerrainType terrainType, URL imageURL)
+    public Terrain(int x, int y, MovementType movementType, TerrainType terrainType, int zAxis, URL imageURL)
             throws IOException, LocationOutOfBoundsException {
         //URL("file:tree_1.png")
         terrainImage = ImageIO.read(imageURL);
@@ -96,9 +103,12 @@ public abstract class TerrainAbstract {
 
         width = terrainImage.getWidth();
         height = terrainImage.getHeight();
-        this.movementType = movementType;
-        this.terrainType = terrainType;
+        this.MOVEMENT_TYPE = movementType;
+        this.TERRAIN_TYPE = terrainType;
+        this.Z_AXIS = zAxis;
         setLocation(x, y);
+
+        Terrain.g2 = null;
     }
 
     /**
@@ -129,28 +139,39 @@ public abstract class TerrainAbstract {
     }
 
     // Draw the terrain at its location in the window.
-    public void draw(Graphics2D g2) {
+    public void draw() {
         // Calculate y location in pixels
-        int yInPixels = WindowProperties.GRID_SIZE * (y+1);
+        int yInPixels = (WindowProperties.GRID_SIZE * (y+1)) - terrainImage.getHeight();
 
         // Calculate x location in pixels
         int xInPixels = WindowProperties.GRID_SIZE * x;
 
-        g2.drawImage(terrainImage, null, xInPixels, yInPixels);
+        Terrain.g2.drawImage(terrainImage, null, xInPixels, yInPixels);
+    }
+
+    public static void drawAll() {
+        while(!drawQueue.isEmpty()) {
+            drawQueue.poll().draw();
+        }
+    }
+
+    public static void setG2(Graphics2D g2) {
+        Terrain.g2 = g2;
+    }
+
+    public void addToDrawQueue() {
+        Terrain.drawQueue.add(this);
+    }
+
+    @Override
+    public int compareTo(Terrain o) {
+        return this.Z_AXIS - o.Z_AXIS;
     }
 
     @Override
     public String toString() {
-        return getTerrainType().toString();
+        return TERRAIN_TYPE.toString();
     }
 
     abstract public void performInteractionAction();
-
-    public MovementType getMovementType() {
-        return movementType;
-    }
-
-    public TerrainType getTerrainType() {
-        return terrainType;
-    }
 }

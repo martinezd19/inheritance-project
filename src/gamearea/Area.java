@@ -5,16 +5,11 @@ import terrain.*;
 import window.Window;
 import window.WindowProperties;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import javax.swing.*;
+import java.awt.*;
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import javax.swing.JPanel;
 
 /**
  * Provides initialization behavior to a game area
@@ -23,28 +18,39 @@ abstract public class Area
         extends JPanel {
 
     // The area tile map.
-    protected ArrayList<TerrainAbstract>[][] terrainTiles;
+    private ArrayList<Terrain>[][] terrainTiles;
 
     // To hide this parameter from being passed around.
     private Graphics2D g2;
 
+    private int zAxis;
+
     // The constructor for the gamearea.Area class.
     public Area() throws IOException, LocationOutOfBoundsException {
-        // Read map and create terrain.terrain objects
-        BufferedReader mapReader = new BufferedReader(new FileReader("map.txt"));
-
-        terrainTiles = loadMap(mapReader);
-
         g2 = null;
 
         setBackground(Color.BLACK);
         setPreferredSize(new Dimension(Window.WIDTH, Window.HEIGHT));
     }
 
-    protected ArrayList<TerrainAbstract>[][] loadMap(BufferedReader mapReader) throws IOException, LocationOutOfBoundsException {
-        ArrayList<TerrainAbstract>[][] mapTiles = new ArrayList[WindowProperties.MAX_Y][WindowProperties.MAX_X];
+    public ArrayList<Terrain>[][] getTerrainTiles() {
+        return terrainTiles;
+    }
 
-        for()
+    public void setTerrainTiles(ArrayList<Terrain>[][] terrainTiles) {
+        this.terrainTiles = terrainTiles;
+    }
+
+
+    protected ArrayList<Terrain>[][] loadMap(BufferedReader mapReader) throws IOException, LocationOutOfBoundsException {
+        ArrayList<Terrain>[][] mapTiles = new ArrayList[WindowProperties.MAX_Y+1][WindowProperties.MAX_X+1];
+
+        // Initialize array
+        for (ArrayList<Terrain>[] a : mapTiles) {
+            for (int b = 0; b < a.length; b++) {
+                a[b] = new ArrayList<>();
+            }
+        }
 
         for (int row = 0; row < mapTiles.length; row++) {
             // Get tile array from row in map.txt
@@ -56,11 +62,10 @@ abstract public class Area
                 // Add each terrain type to tile map
                 for (String terrainType : terrainInTile) {
                     // Convert character to TerrainType
-                    TerrainAbstract.TerrainType tileTerrainType = TerrainAbstract.TerrainType.getTerrainType(terrainType.charAt(0));
+                    Terrain.TerrainType tileTerrainType = Terrain.TerrainType.getTerrainType(terrainType.charAt(0));
                     // Create terrain object corresponding to TerrainType
-                    TerrainAbstract terrainObject = createTerrainObject(tileTerrainType, col, row);
+                    Terrain terrainObject = createTerrainObject(tileTerrainType, col, row);
                     // Add terrain object to map
-                    System.out.println(terrainObject+", "+row+"/"+col);
                     mapTiles[row][col].add(terrainObject);
                 }
             }
@@ -69,8 +74,8 @@ abstract public class Area
         return mapTiles;
     }
 
-    protected TerrainAbstract createTerrainObject(TerrainAbstract.TerrainType tileTerrainType, int x, int y) throws LocationOutOfBoundsException, IOException {
-        TerrainAbstract terrainObject;
+    protected Terrain createTerrainObject(Terrain.TerrainType tileTerrainType, int x, int y) throws LocationOutOfBoundsException, IOException {
+        Terrain terrainObject;
 
         switch (tileTerrainType) {
             case GRASS:
@@ -106,13 +111,17 @@ abstract public class Area
 
         g2 = (Graphics2D) g;
 
-        for (ArrayList<TerrainAbstract>[] a : terrainTiles) {
-            for(ArrayList<TerrainAbstract> b : a) {
-                for(TerrainAbstract terrain : b) {
-                    terrain.draw(g2);
+        Terrain.setG2(g2);
+
+        for (ArrayList<Terrain>[] a : terrainTiles) {
+            for(ArrayList<Terrain> b : a) {
+                for(Terrain terrain : b) {
+                    terrain.addToDrawQueue();
                 }
             }
         }
+
+        Terrain.drawAll();
 
         // Sync for cross-platform smooth rendering.
         Toolkit.getDefaultToolkit()
