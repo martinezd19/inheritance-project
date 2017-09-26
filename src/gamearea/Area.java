@@ -14,6 +14,10 @@ import java.util.ArrayList;
 /**
  * Provides initialization behavior to a game area
  */
+
+/*
+TODO: Implement KeyListener (window.addKeyListener())
+ */
 abstract public class Area
         extends JPanel {
 
@@ -21,16 +25,25 @@ abstract public class Area
     private ArrayList<Terrain>[][] terrainTiles;
 
     // To hide this parameter from being passed around.
-    private Graphics2D g2;
+    private static Graphics2D g2;
 
     private int zAxis;
 
     // The constructor for the gamearea.Area class.
-    public Area() throws IOException, LocationOutOfBoundsException {
-        g2 = null;
+    public Area()
+            throws IOException, LocationOutOfBoundsException {
+        setG2(null);
 
         setBackground(Color.BLACK);
         setPreferredSize(new Dimension(Window.WIDTH, Window.HEIGHT));
+    }
+
+    public static Graphics2D getG2() {
+        return g2;
+    }
+
+    public  static void setG2(Graphics2D g2) {
+        Area.g2 = g2;
     }
 
     public ArrayList<Terrain>[][] getTerrainTiles() {
@@ -41,9 +54,9 @@ abstract public class Area
         this.terrainTiles = terrainTiles;
     }
 
-
-    protected ArrayList<Terrain>[][] loadMap(BufferedReader mapReader) throws IOException, LocationOutOfBoundsException {
-        ArrayList<Terrain>[][] mapTiles = new ArrayList[WindowProperties.MAX_Y+1][WindowProperties.MAX_X+1];
+    protected ArrayList<Terrain>[][] loadMap(BufferedReader mapReader)
+            throws IOException, LocationOutOfBoundsException {
+        ArrayList<Terrain>[][] mapTiles = new ArrayList[WindowProperties.MAX_Y + 1][WindowProperties.MAX_X + 1];
 
         // Initialize array
         for (ArrayList<Terrain>[] a : mapTiles) {
@@ -54,7 +67,8 @@ abstract public class Area
 
         for (int row = 0; row < mapTiles.length; row++) {
             // Get tile array from row in map.txt
-            String[] mapLine = mapReader.readLine().split(" ");
+            String[] mapLine = mapReader.readLine()
+                                        .split(" ");
 
             for (int col = 0; col < mapTiles[0].length; col++) {
                 // Get different terrain in tile
@@ -64,7 +78,7 @@ abstract public class Area
                     // Convert character to TerrainType
                     Terrain.TerrainType tileTerrainType = Terrain.TerrainType.getTerrainType(terrainType.charAt(0));
                     // Create terrain object corresponding to TerrainType
-                    Terrain terrainObject = createTerrainObject(tileTerrainType, col, row);
+                    Terrain terrainObject = Terrain.createTerrainObject(tileTerrainType, col, row);
                     // Add terrain object to map
                     mapTiles[row][col].add(terrainObject);
                 }
@@ -72,33 +86,6 @@ abstract public class Area
         }
 
         return mapTiles;
-    }
-
-    protected Terrain createTerrainObject(Terrain.TerrainType tileTerrainType, int x, int y) throws LocationOutOfBoundsException, IOException {
-        Terrain terrainObject;
-
-        switch (tileTerrainType) {
-            case GRASS:
-                terrainObject = new Grass(x, y);
-                break;
-            case WATER:
-                terrainObject = new Water(x, y);
-                break;
-            case TREE:
-                terrainObject = new Tree(x, y);
-                break;
-            case STONE:
-                terrainObject = new Stone(x, y);
-                break;
-            case FIRE:
-                terrainObject = new Fire(x, y);
-                break;
-            default:
-                terrainObject = new Grass(x, y);
-                break;
-        }
-
-        return terrainObject;
     }
 
     // Overridden function from JPanel, which allows us to
@@ -109,13 +96,11 @@ abstract public class Area
         // the lower-level details of drawing in a window.
         super.paint(g);
 
-        g2 = (Graphics2D) g;
-
-        Terrain.setG2(g2);
+        setG2((Graphics2D)g);
 
         for (ArrayList<Terrain>[] a : terrainTiles) {
-            for(ArrayList<Terrain> b : a) {
-                for(Terrain terrain : b) {
+            for (ArrayList<Terrain> b : a) {
+                for (Terrain terrain : b) {
                     terrain.addToDrawQueue();
                 }
             }
