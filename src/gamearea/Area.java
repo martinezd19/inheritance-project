@@ -7,6 +7,7 @@ import window.WindowProperties;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -111,5 +112,9 @@ abstract public class Area
         // Sync for cross-platform smooth rendering.
         Toolkit.getDefaultToolkit()
                .sync();
+    }
+
+    public static void drawChar(BufferedImage img, int x, int y) {
+        getG2().drawImage(img, null, x, y);
     }
 }

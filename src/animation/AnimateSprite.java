@@ -28,24 +28,52 @@ public class AnimateSprite extends JPanel implements ActionListener {
     double xStep;
     double yStep;
 
+    Graphics2D g2;
+
     Timer animationTimer;
 
     public AnimateSprite() {
         resetVars();
+        x = 0;
+        y = 0;
+        //setBackground(new Color(0,0,0,0));
+        setPreferredSize(new Dimension(AnimateCharacter.TILE_SIZE, AnimateCharacter.TILE_SIZE));
+    }
+
+    public BufferedImage getCurrentImage() {
+        return currentImage;
+    }
+
+    public double getXPos() {
+        return x;
+    }
+
+    public double getYPos() {
+        return y;
     }
 
     @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
+    public void paint(Graphics g) {
+        super.paint(g);
 
-        Graphics2D g2 = (Graphics2D) g;
+        g2 = (Graphics2D) g;
 
-        g2.drawImage(currentImage, null, (int)Math.round(x), (int)Math.round(y));
+        System.out.println("Painting");
+
+        Area.drawChar(currentImage, (int)Math.round(x), (int)Math.round(y));
+
+        // Sync for cross-platform smooth rendering.
+        Toolkit.getDefaultToolkit()
+               .sync();
     }
 
+    /* public void paint() {
+        super.paint((Graphics)g2);
+
+        g2.drawImage(currentImage, null, (int)Math.round(x), (int)Math.round(y));
+    } */
+
     public void resetVars() {
-        x = 0;
-        y = 0;
         numImages = 0;
         frameCounter = 0;
         totalFrameCounter = 0;
@@ -55,6 +83,7 @@ public class AnimateSprite extends JPanel implements ActionListener {
         yStep = 0;
         framesToChange = 1;
         imageCounter = 0;
+        isAnimating = false;
     }
 
     public double getAnimationLength() {
@@ -73,7 +102,7 @@ public class AnimateSprite extends JPanel implements ActionListener {
         this.spriteImages = spriteImages;
     }
 
-    public void animateTo(int xOld, int yOld, int xNew, int yNew) {
+    public void animateTo(int xNew, int yNew) {
         if(isAnimating) {
             return;
         }
@@ -82,8 +111,8 @@ public class AnimateSprite extends JPanel implements ActionListener {
 
         numImages = spriteImages.length;
         stepTiming = ((double)numImages)/animationLength;
-        xStep = ((double)xOld-xNew)/(FRAMERATE*animationLength);
-        yStep = ((double)yOld-yNew)/(FRAMERATE*animationLength);
+        xStep = (x-xNew)/(FRAMERATE*animationLength);
+        yStep = (y-yNew)/(FRAMERATE*animationLength);
         framesToDo = (int)Math.round(FRAMERATE*animationLength);
         framesToChange = (int)Math.round((((double)FRAMERATE)*animationLength)/numImages);
         currentImage = spriteImages[0];
@@ -98,8 +127,8 @@ public class AnimateSprite extends JPanel implements ActionListener {
         y += yStep;
 
         if(totalFrameCounter++ >= framesToDo) {
+            resetVars();
             animationTimer.stop();
-            isAnimating = false;
             return;
         }
 
@@ -109,6 +138,26 @@ public class AnimateSprite extends JPanel implements ActionListener {
             currentImage = (imageCounter < spriteImages.length) ? spriteImages[imageCounter] : spriteImages[spriteImages.length-1];
         }
 
-        this.repaint();
+        SwingUtilities.invokeLater(new DrawRunnable(currentImage, x, y));
     }
 }
+
+class DrawRunnable implements Runnable {
+
+    private final BufferedImage currentImage;
+    private final double x;
+    private final double y;
+
+    DrawRunnable(BufferedImage currentImage, double x, double y) {
+        this.currentImage = currentImage;
+        this.x = x;
+        this.y = y;
+    }
+
+    @Override
+    public void run() {
+        Area.getG2().drawImage(currentImage, null, (int)x, (int)y);
+        System.out.println("Painting 2");
+    }
+}
+

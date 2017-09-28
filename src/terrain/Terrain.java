@@ -51,18 +51,21 @@ public abstract class Terrain
     public Terrain(int x, int y, MovementType movementType, TerrainType terrainType, int zAxis, URL imageURL)
             throws IOException, LocationOutOfBoundsException {
         //URL("file:tree_1.png")
-        terrainImage = ImageIO.read(imageURL);
+        setTerrainImage(ImageIO.read(imageURL));
 
         if (x < 0 || y < 0 || x > MAX_X || y > MAX_Y) {
             throw new LocationOutOfBoundsException(x, y, MAX_X, MAX_Y);
         }
-
-        width = terrainImage.getWidth();
-        height = terrainImage.getHeight();
         this.MOVEMENT_TYPE = movementType;
         this.TERRAIN_TYPE = terrainType;
         this.Z_AXIS = zAxis;
         setLocation(x, y);
+    }
+
+    public void setTerrainImage(BufferedImage terrainImage) {
+        this.terrainImage = terrainImage;
+        width = terrainImage.getWidth();
+        height = terrainImage.getHeight();
     }
 
     /**

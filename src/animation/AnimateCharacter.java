@@ -11,7 +11,7 @@ public class AnimateCharacter {
 
     public static final double ANIMATION_LENGTH = .25;
     public static final int SPRITES_IN_ANIMATION = 4;
-    public static final int TILE_SIZE = 32;
+    public static final int TILE_SIZE = 48;
 
     private final URL      FILE_URL;
     private final String[] SPRITE_ORDER;
@@ -84,6 +84,6 @@ public class AnimateCharacter {
                 break;
         }
 
-        spriteAnimator.animateTo(currentXGrid*gridSize, currentYGrid*gridSize, (currentXGrid+xMove)*gridSize, (currentYGrid+yMove)*gridSize);
+        spriteAnimator.animateTo((currentXGrid+=xMove)*gridSize, (currentYGrid+=yMove)*gridSize);
     }
 }
