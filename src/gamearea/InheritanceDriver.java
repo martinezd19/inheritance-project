@@ -22,27 +22,27 @@ public class InheritanceDriver {
             throws IOException, LocationOutOfBoundsException {
         // Use our area, and show the window.
         Window frame = new Window();
-
+        frame.setLayout(null);
         GameArea area = new GameArea();
 
         BufferedReader mapReader = new BufferedReader(new FileReader("map.txt"));
         area.setTerrainTiles(area.loadMap(mapReader));
 
-        AnimateCharacter character = new AnimateCharacter(3, 3, new URL("file:CharacterSpriteSheet.png"), new String[]{"DOWN", "LEFT", "UP", "RIGHT"});
+        AnimateCharacter character = new AnimateCharacter(3, 3, new URL("file:CharacterSpriteSheet.png"),
+                new String[]{"DOWN", "LEFT", "UP", "RIGHT"});
         frame.addKeyListener(new KeyboardInteraction(character));
+
+        lpane.setBounds(0, 0, WindowProperties.WIDTH, WindowProperties.HEIGHT);
 
         frame.setPreferredSize(new Dimension(WindowProperties.WIDTH, WindowProperties.HEIGHT));
         frame.setResizable(false);
         frame.add(lpane);
-        lpane.setBounds(0, 0, 600, 400);
-        lpane.add(area, new Integer(0));
-        lpane.add(character.getSpriteAnimator(), new Integer(1000));
-        //frame.add(character.getSpriteAnimator());
+        lpane.add(area, 0);
+        lpane.add(character.getSpriteAnimator(), 1000);
         frame.pack();
         frame.setVisible(true);
-        area.paint(frame.getGraphics());
-        //character.getSpriteAnimator().paint(frame.getGraphics());
-
-        //character.animate(AnimateCharacter.Movements.DOWN);
+        area.paint(lpane.getGraphics());
+        character.getSpriteAnimator()
+                 .paint(lpane.getGraphics());
     }
 }

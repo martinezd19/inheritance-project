@@ -2,12 +2,11 @@ package action;
 
 import animation.AnimateCharacter;
 
-import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-public class KeyboardInteraction implements KeyListener {
+public class KeyboardInteraction
+        implements KeyListener {
 
     private AnimateCharacter character;
 
@@ -22,8 +21,22 @@ public class KeyboardInteraction implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        character.animate(AnimateCharacter.Movements.DOWN);
-        System.out.println("Key Pressed");
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_W:
+                character.animate(AnimateCharacter.Movements.UP);
+                break;
+            case KeyEvent.VK_S:
+                character.animate(AnimateCharacter.Movements.DOWN);
+                break;
+            case KeyEvent.VK_A:
+                character.animate(AnimateCharacter.Movements.LEFT);
+                break;
+            case KeyEvent.VK_D:
+                character.animate(AnimateCharacter.Movements.RIGHT);
+                break;
+            default:
+                break;
+        }
     }
 
     @Override

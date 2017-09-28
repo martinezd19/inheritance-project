@@ -1,17 +1,15 @@
 package animation;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.imageio.ImageIO;
-
 public class Sprite {
 
-    private static BufferedImage spriteSheet;
     private static final String defaultSprite = "CharacterSpriteSheet";
+    private static BufferedImage spriteSheet;
     private final int TILE_SIZE;
     private final URL FILE;
 
@@ -35,7 +33,8 @@ public class Sprite {
         return sprite;
     }
 
-    public BufferedImage getSprite(int xGrid, int yGrid) throws MalformedURLException {
+    public BufferedImage getSprite(int xGrid, int yGrid)
+            throws MalformedURLException {
 
         if (spriteSheet == null) {
             spriteSheet = loadSprite();

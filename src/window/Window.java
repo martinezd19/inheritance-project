@@ -1,16 +1,15 @@
 package window;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class Window
         extends JFrame {
 
-    private final JPanel panelBlue = new JPanel();
-    private JFrame frame = new JFrame();
-    private JLayeredPane lpane = new JLayeredPane();
-    public Window()
-    {
+    private final JPanel       panelBlue = new JPanel();
+    private       JFrame       frame     = new JFrame();
+    private       JLayeredPane lpane     = new JLayeredPane();
+
+    public Window() {
         /* frame.setPreferredSize(new Dimension(WindowProperties.WIDTH, WindowProperties.HEIGHT));
         //frame.setLayout(new BorderLayout());
         frame.add(lpane, BorderLayout.CENTER);
@@ -22,7 +21,6 @@ public class Window
         panelBlue.setBounds(0, 0, 600, 400);
         panelBlue.setOpaque(true);
         lpane.add(panelBlue, new Integer(0), 0); */
-
 
         //frame.setVisible(true);
     }
