@@ -13,6 +13,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 
+//TODO: Have program exit on window close
+
 public class InheritanceDriver {
 
     private static JLayeredPane lpane = new JLayeredPane();
@@ -20,29 +22,38 @@ public class InheritanceDriver {
     // The main driver method.
     public static void main(String args[])
             throws IOException, LocationOutOfBoundsException {
-        // Use our area, and show the window.
-        Window frame = new Window();
-        frame.setLayout(null);
+        //Create window, top-level JPanel, and GameArea
+        Window frame  = new Window();
+        JPanel jPanel = new JPanel();
         GameArea area = new GameArea();
 
+        //Initialize area and character
         BufferedReader mapReader = new BufferedReader(new FileReader("map.txt"));
         area.setTerrainTiles(area.loadMap(mapReader));
 
         AnimateCharacter character = new AnimateCharacter(3, 3, new URL("file:CharacterSpriteSheet.png"),
                 new String[]{"DOWN", "LEFT", "UP", "RIGHT"});
-        frame.addKeyListener(new KeyboardInteraction(character));
+
+        //Initialize frame, top-level JPanel, and LayeredPane
+        jPanel.setLayout(null);
 
         lpane.setBounds(0, 0, WindowProperties.WIDTH, WindowProperties.HEIGHT);
 
+        frame.addKeyListener(new KeyboardInteraction(character));
         frame.setPreferredSize(new Dimension(WindowProperties.WIDTH, WindowProperties.HEIGHT));
         frame.setResizable(false);
-        frame.add(lpane);
-        lpane.add(area, 0);
-        lpane.add(character.getSpriteAnimator(), 1000);
+        frame.add(jPanel);
+
+        jPanel.add(lpane);
+
+        lpane.add(character.getSpriteAnimator(), new Integer(1000));
+        lpane.add(area, new Integer(0));
+
+        //Open window
         frame.pack();
         frame.setVisible(true);
-        area.paint(lpane.getGraphics());
-        character.getSpriteAnimator()
-                 .paint(lpane.getGraphics());
+
+        //Paint terrain
+        area.addAllToQueue();
     }
 }

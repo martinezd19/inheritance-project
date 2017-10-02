@@ -1,8 +1,7 @@
 package gamearea;
 
 import exceptions.LocationOutOfBoundsException;
-import terrain.*;
-import window.Window;
+import terrain.Terrain;
 import window.WindowProperties;
 
 import javax.swing.*;
@@ -16,35 +15,26 @@ import java.util.ArrayList;
  * Provides initialization behavior to a game area
  */
 
-/*
-TODO: Implement KeyListener (window.addKeyListener())
- */
 abstract public class Area
-        extends JPanel {
+        extends JLabel {
 
+    private static BufferedImage background;
     // The area tile map.
     private ArrayList<Terrain>[][] terrainTiles;
 
     // To hide this parameter from being passed around.
-    private static Graphics2D g2;
-
-    private int zAxis;
 
     // The constructor for the gamearea.Area class.
     public Area()
             throws IOException, LocationOutOfBoundsException {
-        setG2(null);
 
-        setBackground(Color.BLACK);
-        setPreferredSize(new Dimension(Window.WIDTH, Window.HEIGHT));
+        background = new BufferedImage(WindowProperties.WIDTH, WindowProperties.HEIGHT, BufferedImage.TYPE_INT_ARGB);
+
+        setBounds(0, 0, WindowProperties.WIDTH, WindowProperties.HEIGHT);
     }
 
     public static Graphics2D getG2() {
-        return g2;
-    }
-
-    public  static void setG2(Graphics2D g2) {
-        Area.g2 = g2;
+        return (Graphics2D) background.getGraphics();
     }
 
     public ArrayList<Terrain>[][] getTerrainTiles() {
@@ -89,16 +79,7 @@ abstract public class Area
         return mapTiles;
     }
 
-    // Overridden function from JPanel, which allows us to
-    // write our own paint method which draws our area.
-    @Override
-    public void paint(Graphics g) {
-        // This calls JPanel's paintComponent method to handle
-        // the lower-level details of drawing in a window.
-        super.paint(g);
-
-        setG2((Graphics2D)g);
-
+    public void addAllToQueue() {
         for (ArrayList<Terrain>[] a : terrainTiles) {
             for (ArrayList<Terrain> b : a) {
                 for (Terrain terrain : b) {
@@ -109,12 +90,20 @@ abstract public class Area
 
         Terrain.drawAll();
 
+        setIcon(new ImageIcon(background));
+    }
+
+    // Overridden function from JPanel, which allows us to
+    // write our own paint method which draws our area.
+    @Override
+    public void paint(Graphics g) {
+        // This calls JPanel's paintComponent method to handle
+        // the lower-level details of drawing in a window.
+        super.paint(g);
+
         // Sync for cross-platform smooth rendering.
         Toolkit.getDefaultToolkit()
                .sync();
     }
 
-    public static void drawChar(BufferedImage img, int x, int y) {
-        getG2().drawImage(img, null, x, y);
-    }
 }

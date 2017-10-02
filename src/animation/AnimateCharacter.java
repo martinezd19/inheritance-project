@@ -6,6 +6,8 @@ import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+
+//TODO: Fix keyboard being registered during animation
 public class AnimateCharacter {
 
     public static final double ANIMATION_LENGTH     = .25;

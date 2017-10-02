@@ -6,12 +6,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
+//TODO: Fix character not being drawn on game start
 public class AnimateSprite
         extends JLabel
         implements ActionListener {
 
     private static final int FRAMERATE = 30;
-    private static boolean         isAnimating;
+    private static boolean isAnimating;
     int    numImages;
     int    frameCounter;
     int    totalFrameCounter;
@@ -21,20 +22,18 @@ public class AnimateSprite
     double stepTiming;
     double xStep;
     double yStep;
-    Timer animationTimer;
-    private        double          animationLength;
-    private        BufferedImage[] spriteImages;
-    private        double          x;
-    private        double          y;
-    private        BufferedImage   currentImage;
+    Timer  animationTimer;
+    private double          animationLength;
+    private BufferedImage[] spriteImages;
+    private double          x;
+    private double          y;
+    private BufferedImage   currentImage;
 
     public AnimateSprite(double x, double y) {
         resetVars();
         this.x = x;
         this.y = y;
-        setBackground(new Color(0, 0, 0, 0));
         setBounds((int) Math.round(x), (int) Math.round(y), AnimateCharacter.TILE_SIZE, AnimateCharacter.TILE_SIZE);
-        setLayout(null);
     }
 
     public void setXPos(double x) {

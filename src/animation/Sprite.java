@@ -10,8 +10,8 @@ public class Sprite {
 
     private static final String defaultSprite = "CharacterSpriteSheet";
     private static BufferedImage spriteSheet;
-    private final int TILE_SIZE;
-    private final URL FILE;
+    private final  int           TILE_SIZE;
+    private final  URL           FILE;
 
     public Sprite(int tileSize, URL file) {
         TILE_SIZE = tileSize;

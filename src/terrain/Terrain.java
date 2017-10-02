@@ -5,7 +5,6 @@ import gamearea.Area;
 import window.WindowProperties;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -23,20 +22,20 @@ public abstract class Terrain
         implements Comparable<Terrain> {
 
     // The max x-y location of the bottom left corner of the object on the game grid
-    private static final int MAX_X = WindowProperties.MAX_X;
-    private static final int MAX_Y = WindowProperties.MAX_Y;
-    private static PriorityQueue<Terrain> drawQueue = new PriorityQueue<>();
-    public final TerrainType TERRAIN_TYPE;
-    public final int Z_AXIS;
-    private final MovementType MOVEMENT_TYPE;
+    private static final int                    MAX_X     = WindowProperties.MAX_X;
+    private static final int                    MAX_Y     = WindowProperties.MAX_Y;
+    private static       PriorityQueue<Terrain> drawQueue = new PriorityQueue<>();
+    public final  TerrainType   TERRAIN_TYPE;
+    public final  int           Z_AXIS;
+    private final MovementType  MOVEMENT_TYPE;
     // The x-y location of the bottom left corner of the object on the game grid
-    private int x;
-    private int y;
+    private       int           x;
+    private       int           y;
     // The size of the object. This should be the size of the image in pixels.
-    private int width;
-    private int height;
+    private       int           width;
+    private       int           height;
     // The image of the object.
-    private BufferedImage terrainImage;
+    private       BufferedImage terrainImage;
 
     /**
      * Abstract constructor for terrain
@@ -60,6 +59,42 @@ public abstract class Terrain
         this.TERRAIN_TYPE = terrainType;
         this.Z_AXIS = zAxis;
         setLocation(x, y);
+    }
+
+    public static void drawAll() {
+        while (!drawQueue.isEmpty()) {
+            drawQueue.poll()
+                     .draw();
+        }
+
+    }
+
+    public static Terrain createTerrainObject(Terrain.TerrainType tileTerrainType, int x, int y)
+            throws LocationOutOfBoundsException, IOException {
+        Terrain terrainObject;
+
+        switch (tileTerrainType) {
+            case GRASS:
+                terrainObject = new Grass(x, y);
+                break;
+            case WATER:
+                terrainObject = new Water(x, y);
+                break;
+            case TREE:
+                terrainObject = new Tree(x, y);
+                break;
+            case STONE:
+                terrainObject = new Stone(x, y);
+                break;
+            case FIRE:
+                terrainObject = new Fire(x, y);
+                break;
+            default:
+                terrainObject = new Grass(x, y);
+                break;
+        }
+
+        return terrainObject;
     }
 
     public void setTerrainImage(BufferedImage terrainImage) {
@@ -95,13 +130,6 @@ public abstract class Terrain
         return height;
     }
 
-    public static void drawAll() {
-        while (!drawQueue.isEmpty()) {
-            drawQueue.poll()
-                     .draw();
-        }
-    }
-
     // Draw the terrain at its location in the window.
     public void draw() {
         // Calculate y location in pixels
@@ -110,7 +138,8 @@ public abstract class Terrain
         // Calculate x location in pixels
         int xInPixels = WindowProperties.GRID_SIZE * x;
 
-        Area.getG2().drawImage(terrainImage, null, xInPixels, yInPixels);
+        Area.getG2()
+            .drawImage(terrainImage, null, xInPixels, yInPixels);
     }
 
     public void addToDrawQueue() {
@@ -165,33 +194,5 @@ public abstract class Terrain
         public char getTerrainChar() {
             return terrainChar;
         }
-    }
-
-    public static Terrain createTerrainObject(Terrain.TerrainType tileTerrainType, int x, int y)
-            throws LocationOutOfBoundsException, IOException {
-        Terrain terrainObject;
-
-        switch (tileTerrainType) {
-            case GRASS:
-                terrainObject = new Grass(x, y);
-                break;
-            case WATER:
-                terrainObject = new Water(x, y);
-                break;
-            case TREE:
-                terrainObject = new Tree(x, y);
-                break;
-            case STONE:
-                terrainObject = new Stone(x, y);
-                break;
-            case FIRE:
-                terrainObject = new Fire(x, y);
-                break;
-            default:
-                terrainObject = new Grass(x, y);
-                break;
-        }
-
-        return terrainObject;
     }
 }
