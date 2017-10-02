@@ -10,6 +10,6 @@ public interface WindowProperties {
     int GRID_SIZE = 40;
 
     //The max x-y grid locations
-    int MAX_X = (WIDTH / GRID_SIZE)-1;
-    int MAX_Y = (HEIGHT / GRID_SIZE)-1;
+    int MAX_X = (WIDTH / GRID_SIZE) - 1;
+    int MAX_Y = (HEIGHT / GRID_SIZE) - 1;
 }

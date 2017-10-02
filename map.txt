@@ -1,6 +1,6 @@
 G G G G G G G G G G G G G G G G
 G G G G G G G G G/T G G G G G G G
-G G G G G G G G G G G G G G G G
+G G G G/S G G G G G G G G G G G G
 G G G G G G G G G G G G W W W W
 G G G G G G G G G G G G W W W W
 G G/S G G G G G G G G G G G G G G
