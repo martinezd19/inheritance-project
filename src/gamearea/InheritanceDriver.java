@@ -13,47 +13,54 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 
-//TODO: Have program exit on window close
-
 public class InheritanceDriver {
 
     private static JLayeredPane lpane = new JLayeredPane();
 
     // The main driver method.
-    public static void main(String args[])
-            throws IOException, LocationOutOfBoundsException {
+    public static void main(String args[]) {
         //Create window, top-level JPanel, and GameArea
         Window frame  = new Window();
         JPanel jPanel = new JPanel();
-        GameArea area = new GameArea();
 
-        //Initialize area and character
-        BufferedReader mapReader = new BufferedReader(new FileReader("map.txt"));
-        area.setTerrainTiles(area.loadMap(mapReader));
+        try {
+            GameArea area = new GameArea();
 
-        AnimateCharacter character = new AnimateCharacter(3, 3, new URL("file:CharacterSpriteSheet.png"),
-                new String[]{"DOWN", "LEFT", "UP", "RIGHT"});
+            //Initialize area and character
+            BufferedReader mapReader = new BufferedReader(new FileReader("map.txt"));
+            area.setTerrainTiles(area.loadMap(mapReader));
 
-        //Initialize frame, top-level JPanel, and LayeredPane
-        jPanel.setLayout(null);
+            AnimateCharacter character = new AnimateCharacter(3, 3, new URL("file:CharacterSpriteSheet.png"),
+                    new String[]{"DOWN", "LEFT", "UP", "RIGHT"});
 
-        lpane.setBounds(0, 0, WindowProperties.WIDTH, WindowProperties.HEIGHT);
+            //Initialize frame, top-level JPanel, and LayeredPane
+            jPanel.setLayout(null);
 
-        frame.addKeyListener(new KeyboardInteraction(character));
-        frame.setPreferredSize(new Dimension(WindowProperties.WIDTH, WindowProperties.HEIGHT));
-        frame.setResizable(false);
-        frame.add(jPanel);
+            lpane.setBounds(0, 0, WindowProperties.WIDTH, WindowProperties.HEIGHT);
 
-        jPanel.add(lpane);
+            frame.addKeyListener(new KeyboardInteraction(character));
+            frame.setPreferredSize(new Dimension(WindowProperties.WIDTH, WindowProperties.HEIGHT));
+            frame.setResizable(false);
+            frame.add(jPanel);
+            frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-        lpane.add(character.getSpriteAnimator(), new Integer(1000));
-        lpane.add(area, new Integer(0));
+            jPanel.add(lpane);
 
-        //Open window
-        frame.pack();
-        frame.setVisible(true);
+            lpane.add(character.getSpriteAnimator(), Integer.valueOf(1000));
+            lpane.add(area, Integer.valueOf(0));
 
-        //Paint terrain
-        area.addAllToQueue();
+            //Open window
+            frame.pack();
+            frame.setVisible(true);
+
+            //Paint terrain
+            area.addAllToQueue();
+        } catch (LocationOutOfBoundsException e) {
+            System.out.println("Error with bounds; check that map size matches with window grid size");
+            System.exit(0);
+        } catch (IOException e) {
+            System.out.println("File exception; check that all file names are valid");
+            System.exit(0);
+        }
     }
 }

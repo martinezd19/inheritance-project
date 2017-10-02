@@ -10,11 +10,16 @@ public class Grass
 
     public Grass(int x, int y)
             throws IOException, LocationOutOfBoundsException {
-        super(x, y, MovementType.NORMAL, TerrainType.GRASS, 0, new URL("file:grass.png"));
+        super(x, y, MovementType.NORMAL, TerrainType.GRASS, 0, new URL("file:grass.png"), 1, 1);
     }
 
     @Override
     public void performInteractionAction() {
         System.out.println("It's grass!");
+    }
+
+    @Override
+    public boolean canMoveHere() {
+        return true;
     }
 }

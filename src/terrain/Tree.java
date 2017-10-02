@@ -10,13 +10,16 @@ public class Tree
 
     public Tree(int x, int y)
             throws IOException, LocationOutOfBoundsException {
-        super(x, y, MovementType.BLOCKED, TerrainType.TREE, 1,
-                /* Randomly picks one of two tree images */
-                (Math.round(Math.random()) == 0 ? new URL("file:tree_1.png") : new URL("file:tree_2.png")));
+        super(x, y, MovementType.BLOCKED, TerrainType.TREE, 1, new URL("file:tree_2.png"), 3, 3);
     }
 
     @Override
     public void performInteractionAction() {
         System.out.println("It's a tree!");
+    }
+
+    @Override
+    public boolean canMoveHere() {
+        return false;
     }
 }

@@ -1,18 +1,17 @@
 package animation;
 
+import gamearea.Area;
 import window.WindowProperties;
 
 import java.awt.image.BufferedImage;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-
-//TODO: Fix keyboard being registered during animation
 public class AnimateCharacter {
 
-    public static final double ANIMATION_LENGTH     = .25;
-    public static final int    SPRITES_IN_ANIMATION = 4;
-    public static final int    TILE_SIZE            = 48;
+    public static final double ANIMATION_LENGTH     = .5;
+    public static final int    SPRITES_IN_ANIMATION = 5;
+    public static final int    TILE_SIZE            = 32;
 
     private final URL      FILE_URL;
     private final String[] SPRITE_ORDER;
@@ -40,7 +39,7 @@ public class AnimateCharacter {
                      .setSpriteImages(spriteImages);
         }
         int gridSize = WindowProperties.GRID_SIZE;
-        spriteAnimator = new AnimateSprite(currentXGrid * gridSize, currentYGrid * gridSize);
+        spriteAnimator = new AnimateSprite(currentXGrid * gridSize, currentYGrid * gridSize, Movements.DOWN.getSpriteImages()[0]);
         spriteAnimator.setAnimationLength(ANIMATION_LENGTH);
     }
 
@@ -49,6 +48,10 @@ public class AnimateCharacter {
     }
 
     public void animate(Movements movement) {
+        if(spriteAnimator.isAnimating()) {
+            return;
+        }
+
         spriteAnimator.setSpriteImages(movement.getSpriteImages());
 
         int yMove    = 0;
@@ -72,7 +75,16 @@ public class AnimateCharacter {
                 break;
         }
 
-        spriteAnimator.animateTo((currentXGrid += xMove) * gridSize, (currentYGrid += yMove) * gridSize);
+        currentXGrid += xMove;
+        currentYGrid += yMove;
+
+        if(!Area.interactWithTile(currentXGrid, currentYGrid)) {
+            currentXGrid -= xMove;
+            currentYGrid -= yMove;
+            return;
+        }
+
+        spriteAnimator.animateTo((currentXGrid) * gridSize, (currentYGrid) * gridSize);
     }
 
     public enum Movements {

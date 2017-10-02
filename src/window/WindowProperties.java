@@ -7,7 +7,7 @@ public interface WindowProperties {
     int HEIGHT = 640;
 
     // The size of each square on the game grid
-    int GRID_SIZE = 40;
+    int GRID_SIZE = 32;
 
     //The max x-y grid locations
     int MAX_X = (WIDTH / GRID_SIZE) - 1;

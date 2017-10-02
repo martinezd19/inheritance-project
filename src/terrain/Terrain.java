@@ -34,6 +34,8 @@ public abstract class Terrain
     // The size of the object. This should be the size of the image in pixels.
     private       int           width;
     private       int           height;
+    public final int           G_WIDTH;
+    public final int           G_HEIGHT;
     // The image of the object.
     private       BufferedImage terrainImage;
 
@@ -47,8 +49,10 @@ public abstract class Terrain
      * @throws IOException
      * @throws LocationOutOfBoundsException
      */
-    public Terrain(int x, int y, MovementType movementType, TerrainType terrainType, int zAxis, URL imageURL)
+    public Terrain(int x, int y, MovementType movementType, TerrainType terrainType, int zAxis, URL imageURL, int G_HEIGHT, int G_WIDTH)
             throws IOException, LocationOutOfBoundsException {
+        this.G_HEIGHT = G_HEIGHT;
+        this.G_WIDTH = G_WIDTH;
         //URL("file:tree_1.png")
         setTerrainImage(ImageIO.read(imageURL));
 
@@ -67,6 +71,18 @@ public abstract class Terrain
                      .draw();
         }
 
+    }
+
+    // Draw the terrain at its location in the window.
+    public void draw() {
+        // Calculate y location in pixels
+        int yInPixels = (WindowProperties.GRID_SIZE * (y + 1)) - terrainImage.getHeight();
+
+        // Calculate x location in pixels
+        int xInPixels = WindowProperties.GRID_SIZE * x;
+
+        Area.getG2()
+            .drawImage(terrainImage, null, xInPixels, yInPixels);
     }
 
     public static Terrain createTerrainObject(Terrain.TerrainType tileTerrainType, int x, int y)
@@ -130,17 +146,7 @@ public abstract class Terrain
         return height;
     }
 
-    // Draw the terrain at its location in the window.
-    public void draw() {
-        // Calculate y location in pixels
-        int yInPixels = (WindowProperties.GRID_SIZE * (y + 1)) - terrainImage.getHeight();
 
-        // Calculate x location in pixels
-        int xInPixels = WindowProperties.GRID_SIZE * x;
-
-        Area.getG2()
-            .drawImage(terrainImage, null, xInPixels, yInPixels);
-    }
 
     public void addToDrawQueue() {
         Terrain.drawQueue.add(this);
@@ -157,6 +163,8 @@ public abstract class Terrain
     }
 
     abstract public void performInteractionAction();
+
+    abstract public boolean canMoveHere();
 
     // Object movement type
     public enum MovementType {
