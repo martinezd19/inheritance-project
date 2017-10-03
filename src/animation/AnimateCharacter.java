@@ -9,9 +9,9 @@ import java.net.URL;
 
 public class AnimateCharacter {
 
-    public static final double ANIMATION_LENGTH     = .5;
+    public static final double ANIMATION_LENGTH     = .4;
     public static final int    SPRITES_IN_ANIMATION = 5;
-    public static final int    TILE_SIZE            = 32;
+    public static final int    TILE_SIZE            = 64;
 
     private final URL      FILE_URL;
     private final String[] SPRITE_ORDER;
@@ -77,6 +77,12 @@ public class AnimateCharacter {
 
         currentXGrid += xMove;
         currentYGrid += yMove;
+
+        if(WindowProperties.outOfGrid(currentXGrid, currentYGrid)) {
+            currentXGrid -= xMove;
+            currentYGrid -= yMove;
+            return;
+        }
 
         if(!Area.interactWithTile(currentXGrid, currentYGrid)) {
             currentXGrid -= xMove;

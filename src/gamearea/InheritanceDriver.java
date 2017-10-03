@@ -30,7 +30,7 @@ public class InheritanceDriver {
             BufferedReader mapReader = new BufferedReader(new FileReader("map.txt"));
             area.setTerrainTiles(area.loadMap(mapReader));
 
-            AnimateCharacter character = new AnimateCharacter(3, 3, new URL("file:CharacterSpriteSheet.png"),
+            AnimateCharacter character = new AnimateCharacter(10, 10, new URL("file:assets/CharacterSpriteSheet.png"),
                     new String[]{"DOWN", "LEFT", "UP", "RIGHT"});
 
             //Initialize frame, top-level JPanel, and LayeredPane
@@ -57,9 +57,11 @@ public class InheritanceDriver {
             area.addAllToQueue();
         } catch (LocationOutOfBoundsException e) {
             System.out.println("Error with bounds; check that map size matches with window grid size");
+            e.printStackTrace();
             System.exit(0);
         } catch (IOException e) {
             System.out.println("File exception; check that all file names are valid");
+            e.printStackTrace();
             System.exit(0);
         }
     }

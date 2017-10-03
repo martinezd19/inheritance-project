@@ -5,14 +5,14 @@ import exceptions.LocationOutOfBoundsException;
 import java.io.File;
 import java.io.IOException;
 
-public class Water extends Terrain {
+public class Lava extends Terrain {
 
-    private final String DIRECTORY = "assets/floor/water";
-    private final String SOUND_FILE = "assets/sound/water.wav";
+    private final String DIRECTORY = "assets/floor/lava";
+    private final String SOUND_FILE = "assets/sound/lava1.wav";
 
-    public Water(int x, int y)
+    public Lava(int x, int y)
             throws IOException, LocationOutOfBoundsException {
-        super(x, y, Terrain.MovementType.NORMAL, TerrainType.WATER, 0, 1, 1);
+        super(x, y, Terrain.MovementType.NORMAL, TerrainType.LAVA, 0, 1, 1);
 
         setTerrainImage(pickRandomImageInDir(DIRECTORY));
     }

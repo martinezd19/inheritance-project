@@ -5,11 +5,18 @@ import gamearea.Area;
 import window.WindowProperties;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.Buffer;
 import java.util.HashMap;
 import java.util.PriorityQueue;
+import java.util.Random;
 
 /**
  * <h1>terrain.Terrain Class</h1> The terrain.Terrain class defines behavior for all terrain.
@@ -39,24 +46,22 @@ public abstract class Terrain
     // The image of the object.
     private       BufferedImage terrainImage;
 
-    /**
-     * Abstract constructor for terrain
-     *
-     * @param x x-location of bottom edge of terrain
-     * @param y y-location of bottom edge of terrain
-     * @param imageURL URL of terrain image
-     *
-     * @throws IOException
-     * @throws LocationOutOfBoundsException
-     */
-    public Terrain(int x, int y, MovementType movementType, TerrainType terrainType, int zAxis, URL imageURL, int G_HEIGHT, int G_WIDTH)
+    private static Clip clip;
+
+    static {
+        try {
+            clip = AudioSystem.getClip();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Terrain(int x, int y, MovementType movementType, TerrainType terrainType, int zAxis, int G_HEIGHT, int G_WIDTH)
             throws IOException, LocationOutOfBoundsException {
         this.G_HEIGHT = G_HEIGHT;
         this.G_WIDTH = G_WIDTH;
-        //URL("file:tree_1.png")
-        setTerrainImage(ImageIO.read(imageURL));
 
-        if (x < 0 || y < 0 || x > MAX_X || y > MAX_Y) {
+        if (WindowProperties.outOfGrid(x, y)) {
             throw new LocationOutOfBoundsException(x, y, MAX_X, MAX_Y);
         }
         this.MOVEMENT_TYPE = movementType;
@@ -85,50 +90,18 @@ public abstract class Terrain
             .drawImage(terrainImage, null, xInPixels, yInPixels);
     }
 
-    public static Terrain createTerrainObject(Terrain.TerrainType tileTerrainType, int x, int y)
-            throws LocationOutOfBoundsException, IOException {
-        Terrain terrainObject;
-
-        switch (tileTerrainType) {
-            case GRASS:
-                terrainObject = new Grass(x, y);
-                break;
-            case WATER:
-                terrainObject = new Water(x, y);
-                break;
-            case TREE:
-                terrainObject = new Tree(x, y);
-                break;
-            case STONE:
-                terrainObject = new Stone(x, y);
-                break;
-            case FIRE:
-                terrainObject = new Fire(x, y);
-                break;
-            default:
-                terrainObject = new Grass(x, y);
-                break;
-        }
-
-        return terrainObject;
-    }
-
     public void setTerrainImage(BufferedImage terrainImage) {
         this.terrainImage = terrainImage;
         width = terrainImage.getWidth();
         height = terrainImage.getHeight();
     }
 
-    /**
-     * Set terrain location
-     *
-     * @param x x-location on grid
-     * @param y y-location on grid
-     */
     public void setLocation(int x, int y) {
         this.x = x;
         this.y = y;
     }
+
+
 
     public int getX() {
         return x;
@@ -173,13 +146,15 @@ public abstract class Terrain
         SLOW
     }
 
-    // Types of terrain
+    /* *** ADD NEW TERRAIN OBJECTS TO THIS ENUM *** */
     public enum TerrainType {
-        GRASS('G'),
-        WATER('W'),
-        TREE('T'),
+        ACID('A'),
+        BRICK('B'),
+        COBBLE('C'),
+        DEMONIC_STONE('D'),
+        LAVA('L'),
         STONE('S'),
-        FIRE('F');
+        WATER('W');
 
         private static HashMap<Character, TerrainType> characterMap = new HashMap<>();
 
@@ -201,6 +176,64 @@ public abstract class Terrain
 
         public char getTerrainChar() {
             return terrainChar;
+        }
+    }
+
+    /* *** ADD NEW TERRAIN OBJECTS TO THIS SWITCH *** */
+    public static Terrain createTerrainObject(Terrain.TerrainType tileTerrainType, int x, int y)
+            throws LocationOutOfBoundsException, IOException {
+        Terrain terrainObject;
+
+        switch (tileTerrainType) {
+            case ACID:
+                terrainObject = new Acid(x, y);
+                break;
+            case BRICK:
+                terrainObject = new Brick(x, y);
+                break;
+            case COBBLE:
+                terrainObject = new Cobble(x, y);
+                break;
+            case DEMONIC_STONE:
+                terrainObject = new DemonicStone(x, y);
+                break;
+            case LAVA:
+                terrainObject = new Lava(x, y);
+                break;
+            case STONE:
+                terrainObject = new Stone(x,y);
+                break;
+            case WATER:
+                terrainObject = new Water(x, y);
+                break;
+            default:
+                terrainObject = new Cobble(x, y);
+                break;
+        }
+
+        return terrainObject;
+    }
+
+    protected BufferedImage pickRandomImageInDir(String directory) throws IOException {
+        File   dir      = new File(directory);
+        File[] images   = dir.listFiles();
+        Random rand     = new Random();
+        File   randFile = images[rand.nextInt(images.length)];
+        return ImageIO.read(randFile);
+    }
+
+    protected static void playSound(File soundFile) {
+        if(clip.isRunning()) {
+            return;
+        }
+
+        try {
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
+            clip.close();
+            clip.open(audioIn);
+            clip.start();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
