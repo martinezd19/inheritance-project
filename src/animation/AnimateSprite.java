@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.nio.Buffer;
 
 //TODO: Fix character not being drawn on game start
 public class AnimateSprite
@@ -25,23 +26,38 @@ public class AnimateSprite
     Timer  animationTimer;
     private double          animationLength;
     private BufferedImage[] spriteImages;
-    private double          x;
-    private double          y;
+    private double          xPos;
+    private double          yPos;
     private BufferedImage   currentImage;
 
-    public AnimateSprite(double x, double y) {
+    public AnimateSprite(double xPos, double yPos, BufferedImage startingImage) {
         resetVars();
-        this.x = x;
-        this.y = y;
-        setBounds((int) Math.round(x), (int) Math.round(y), AnimateCharacter.TILE_SIZE, AnimateCharacter.TILE_SIZE);
+        this.xPos = xPos;
+        this.yPos = yPos;
+        setBounds((int) Math.round(xPos), (int) Math.round(yPos), AnimateCharacter.TILE_SIZE, AnimateCharacter.TILE_SIZE);
+        setLocation((int) Math.round(xPos), (int) Math.round(yPos));
+        setIcon(new ImageIcon(startingImage));
+        setBackground(new Color(0, 0, 0, 0));
     }
 
     public void setXPos(double x) {
-        this.x = x;
+        this.xPos = x;
     }
 
     public void setYPos(double y) {
-        this.y = y;
+        this.yPos = y;
+    }
+
+    public void setAnimationLength(double animationLength) {
+        this.animationLength = animationLength;
+    }
+
+    public void setSpriteImages(BufferedImage[] spriteImages) {
+        this.spriteImages = spriteImages;
+    }
+
+    public boolean isAnimating() {
+        return isAnimating;
     }
 
     @Override
@@ -53,7 +69,7 @@ public class AnimateSprite
                .sync();
     }
 
-    public void resetVars() {
+    private void resetVars() {
         numImages = 0;
         frameCounter = 0;
         totalFrameCounter = 0;
@@ -66,15 +82,7 @@ public class AnimateSprite
         isAnimating = false;
     }
 
-    public void setAnimationLength(double animationLength) {
-        this.animationLength = animationLength;
-    }
-
-    public void setSpriteImages(BufferedImage[] spriteImages) {
-        this.spriteImages = spriteImages;
-    }
-
-    public void animateTo(int xNew, int yNew) {
+    protected void animateTo(int xNew, int yNew) {
         if (isAnimating) {
             return;
         }
@@ -83,8 +91,8 @@ public class AnimateSprite
 
         numImages = spriteImages.length;
         stepTiming = ((double) numImages) / animationLength;
-        xStep = (xNew - x) / (FRAMERATE * animationLength);
-        yStep = (yNew - y) / (FRAMERATE * animationLength);
+        xStep = (xNew - xPos) / (FRAMERATE * animationLength);
+        yStep = (yNew - yPos) / (FRAMERATE * animationLength);
         framesToDo = (int) Math.round(FRAMERATE * animationLength);
         framesToChange = (int) Math.round((((double) FRAMERATE) * animationLength) / numImages);
         currentImage = spriteImages[0];
@@ -95,8 +103,8 @@ public class AnimateSprite
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        x += xStep;
-        y += yStep;
+        xPos += xStep;
+        yPos += yStep;
 
         if (totalFrameCounter++ >= framesToDo) {
             resetVars();
@@ -111,7 +119,7 @@ public class AnimateSprite
                     spriteImages[spriteImages.length - 1];
         }
 
-        SwingUtilities.invokeLater(new DrawRunnable(currentImage, x, y, this));
+        SwingUtilities.invokeLater(new DrawRunnable(currentImage, xPos, yPos, this));
     }
 }
 

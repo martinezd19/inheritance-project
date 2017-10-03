@@ -20,7 +20,7 @@ abstract public class Area
 
     private static BufferedImage background;
     // The area tile map.
-    private ArrayList<Terrain>[][] terrainTiles;
+    private static ArrayList<Terrain>[][] terrainTiles;
 
     // To hide this parameter from being passed around.
 
@@ -41,8 +41,22 @@ abstract public class Area
         return terrainTiles;
     }
 
-    public void setTerrainTiles(ArrayList<Terrain>[][] terrainTiles) {
-        this.terrainTiles = terrainTiles;
+    public static void setTerrainTiles(ArrayList<Terrain>[][] terrainTiles) {
+        Area.terrainTiles = terrainTiles;
+    }
+
+    public static boolean interactWithTile(int x, int y) {
+        ArrayList<Terrain> terrain = terrainTiles[y][x];
+        boolean canMove = true;
+
+        for(Terrain tile : terrain) {
+            tile.performInteractionAction();
+            if(!tile.canMoveHere()) {
+                canMove = false;
+            }
+        }
+
+        return canMove;
     }
 
     protected ArrayList<Terrain>[][] loadMap(BufferedReader mapReader)
@@ -71,7 +85,16 @@ abstract public class Area
                     // Create terrain object corresponding to TerrainType
                     Terrain terrainObject = Terrain.createTerrainObject(tileTerrainType, col, row);
                     // Add terrain object to map
-                    mapTiles[row][col].add(terrainObject);
+                    int height = terrainObject.G_HEIGHT;
+                    int width = terrainObject.G_WIDTH;
+
+                    for(int i = row; i >= Math.max(0, row-height+1); i--) {
+                        for(int j = col; j <= Math.min(mapTiles[0].length-1, col+width-1); j++) {
+                            mapTiles[i][j].add(terrainObject);
+                        }
+                    }
+
+                    //mapTiles[row][col].add(terrainObject);
                 }
             }
         }
